@@ -1,0 +1,39 @@
+[package]
+name = "libraryan"
+version = "0.1.0"
+authors = ["Raphaël Thériault <raphael_theriault@outlook.com>"]
+edition = "2018"
+license = "MIT"
+build = "build.rs"
+description = "Self-hosted web ebook library"
+readme = "README.md"
+
+[dependencies]
+cfg-if = "0.1.10"
+chrono = "0.4.10"
+diesel = { version = "1.4.3", features = ["chrono", "r2d2", "sqlite"] }
+diesel_migrations = "1.4.0"
+dirs = "2.0.2"
+dotenv = { version = "0.15.0", optional = true }
+env_logger = "0.7.1"
+jsonwebtoken = "7.0.1"
+lazy_static = "1.4.0"
+libsqlite3-sys = { version = "0.16", features = ["bundled"] }
+num_cpus = "1.12.0"
+rand = "0.7.3"
+rust-argon2 = "0.7.0"
+serde = { version = "1.0.104", features = ["derive"] }
+tar = "0.4.26"
+tokio = { version = "0.2.11", features = ["macros"] }
+toml = "0.5.6"
+warp = { version = "0.2.1", default-features = false, features = ["multipart"] }
+xz2 = "0.1.6"
+
+[build-dependencies]
+tar = "0.4.26"
+xz2 = "0.1.6"
+
+[features]
+default = ["tls"]
+dev = ["dotenv"]
+tls = ["warp/tls"]
