@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate diesel;
 
+mod config;
+mod globals;
 mod models;
 mod schema;
 

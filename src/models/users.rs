@@ -1,7 +1,11 @@
-use crate::models::permissions::Permission;
+use crate::{
+    globals::POOL,
+    models::permissions::{self, Permission},
+    schema,
+};
 use chrono::NaiveDateTime;
-use diesel::QueryResult;
-use std::collections::HashSet;
+use diesel::prelude::*;
+use std::{collections::HashSet, convert::TryFrom};
 
 pub struct User {
     pub id: i32,
@@ -13,9 +17,32 @@ pub struct User {
     pub last_login: Option<NaiveDateTime>,
 }
 
-impl User {
-    pub fn by_id(id: i32) -> QueryResult<Self> {
-        unimplemented!()
+impl TryFrom<db::User> for User {
+    type Error = diesel::result::Error;
+
+    fn try_from(value: db::User) -> Result<Self, Self::Error> {
+        let connection = POOL.get().unwrap();
+
+        let permission_mappings = db::UserPermissionMapping::belonging_to(&value)
+            .load::<db::UserPermissionMapping>(&connection)?;
+
+        let mut permissions = HashSet::with_capacity(permission_mappings.len());
+        for permission_mapping in permission_mappings {
+            let permission = schema::permissions::dsl::permissions
+                .find(permission_mapping.permission_id)
+                .first::<permissions::db::Permission>(&connection)?;
+            permissions.insert(permission.into());
+        }
+
+        Ok(Self {
+            id: value.id,
+            login: value.login,
+            display_name: value.display_name,
+            permissions,
+            registered: value.registered,
+            updated: value.updated,
+            last_login: value.last_login,
+        })
     }
 }
 

@@ -15,6 +15,7 @@ diesel = { version = "1.4.3", features = ["chrono", "r2d2", "sqlite"] }
 diesel_migrations = "1.4.0"
 dirs = "2.0.2"
 dotenv = { version = "0.15.0", optional = true }
+envy = "0.4.1"
 env_logger = "0.7.1"
 jsonwebtoken = "7.0.1"
 lazy_static = "1.4.0"
