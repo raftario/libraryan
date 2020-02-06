@@ -3,9 +3,22 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(default)]
+pub struct CacheConfig {
+    pub user_cache_size: usize,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(default)]
 pub struct Config {
     pub database_url: String,
     pub database_pool_size: u32,
+    pub cache: CacheConfig,
+}
+
+impl Default for CacheConfig {
+    fn default() -> Self {
+        Self { user_cache_size: 8 }
+    }
 }
 
 impl Default for Config {
@@ -31,6 +44,7 @@ impl Default for Config {
         Self {
             database_url,
             database_pool_size,
+            cache: Default::default(),
         }
     }
 }

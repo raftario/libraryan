@@ -19,5 +19,6 @@ lazy_static! {
             .build(manager)
             .expect("Can't create pool")
     };
-    pub static ref USER_CACHE: Mutex<UserCache> = Mutex::new(UserCache::new(64));
+    pub static ref USER_CACHE: Mutex<UserCache> =
+        Mutex::new(UserCache::new(CONFIG.cache.user_cache_size));
 }
