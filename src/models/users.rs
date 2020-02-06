@@ -1,4 +1,5 @@
 use crate::{
+    error::Error,
     globals::{POOL, USER_CACHE},
     models::permissions::Permission,
     schema,
@@ -23,7 +24,7 @@ pub struct User {
 }
 
 impl User {
-    pub fn by_id(id: i32) -> Result<User, diesel::result::Error> {
+    pub fn by_id(id: i32) -> Result<User, Error> {
         let mut cache = USER_CACHE.lock().expect("Can't lock mutex");
         let user = cache.get(&id);
         if let Some(u) = user {
@@ -42,7 +43,7 @@ impl User {
 }
 
 impl TryFrom<db::User> for User {
-    type Error = diesel::result::Error;
+    type Error = Error;
 
     fn try_from(value: db::User) -> Result<Self, Self::Error> {
         let connection = POOL.get().unwrap();

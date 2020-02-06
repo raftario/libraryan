@@ -2,6 +2,7 @@
 extern crate diesel;
 
 mod config;
+mod error;
 mod globals;
 mod models;
 mod schema;
