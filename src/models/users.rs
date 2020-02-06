@@ -1,8 +1,4 @@
-use crate::{
-    globals::POOL,
-    models::permissions::{self, Permission},
-    schema,
-};
+use crate::{globals::POOL, models::permissions::Permission};
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use std::{collections::HashSet, convert::TryFrom};
@@ -28,10 +24,8 @@ impl TryFrom<db::User> for User {
 
         let mut permissions = HashSet::with_capacity(permission_mappings.len());
         for permission_mapping in permission_mappings {
-            let permission = schema::permissions::dsl::permissions
-                .find(permission_mapping.permission_id)
-                .first::<permissions::db::Permission>(&connection)?;
-            permissions.insert(permission.into());
+            let permission = permission_mapping.permission_id.into();
+            permissions.insert(permission);
         }
 
         Ok(Self {
