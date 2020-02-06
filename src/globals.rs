@@ -4,17 +4,16 @@ use diesel::{
     sqlite::SqliteConnection,
 };
 use lazy_static::lazy_static;
-use std::process;
 
 pub type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
 lazy_static! {
-    pub static ref CONFIG: Config = match envy::from_env() {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("Invalid config: {}", e);
-            process::exit(1);
-        }
+    pub static ref CONFIG: Config = envy::from_env().expect("Invalid config");
+    pub static ref POOL: Pool = {
+        let manager = ConnectionManager::<SqliteConnection>::new(&CONFIG.database_url);
+        r2d2::Pool::builder()
+            .max_size(CONFIG.database_pool_size)
+            .build(manager)
+            .expect("Can't create pool")
     };
-    pub static ref POOL: Pool = unimplemented!();
 }
