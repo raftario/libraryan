@@ -1,11 +1,14 @@
-use crate::config::Config;
+use crate::{config::Config, models::users::User};
 use diesel::{
     r2d2::{self, ConnectionManager},
     sqlite::SqliteConnection,
 };
 use lazy_static::lazy_static;
+use lru::LruCache;
+use std::sync::Mutex;
 
 pub type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+pub type UserCache = LruCache<i32, User>;
 
 lazy_static! {
     pub static ref CONFIG: Config = envy::from_env().expect("Invalid config");
@@ -16,4 +19,5 @@ lazy_static! {
             .build(manager)
             .expect("Can't create pool")
     };
+    pub static ref USER_CACHE: Mutex<UserCache> = Mutex::new(UserCache::new(64));
 }

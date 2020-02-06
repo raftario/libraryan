@@ -1,16 +1,44 @@
-use crate::{globals::POOL, models::permissions::Permission};
+use crate::{
+    globals::{POOL, USER_CACHE},
+    models::permissions::Permission,
+    schema,
+};
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use std::{collections::HashSet, convert::TryFrom};
+use std::{
+    collections::HashSet,
+    convert::{TryFrom, TryInto},
+};
 
+#[derive(Clone, Debug)]
 pub struct User {
     pub id: i32,
     pub login: String,
+    password: Vec<u8>,
     pub display_name: String,
     pub permissions: HashSet<Permission>,
     pub registered: NaiveDateTime,
     pub updated: NaiveDateTime,
     pub last_login: Option<NaiveDateTime>,
+}
+
+impl User {
+    pub fn by_id(id: i32) -> Result<User, diesel::result::Error> {
+        let mut cache = USER_CACHE.lock().expect("Can't lock mutex");
+        let user = cache.get(&id);
+        if let Some(u) = user {
+            return Ok((*u).clone());
+        }
+
+        let connection = POOL.get().unwrap();
+
+        let user: User = schema::users::dsl::users
+            .find(id)
+            .first::<db::User>(&connection)?
+            .try_into()?;
+        cache.put(user.id, user.clone());
+        Ok(user)
+    }
 }
 
 impl TryFrom<db::User> for User {
@@ -30,8 +58,9 @@ impl TryFrom<db::User> for User {
 
         Ok(Self {
             id: value.id,
-            login: value.login,
-            display_name: value.display_name,
+            login: value.login.clone(),
+            password: value.password,
+            display_name: value.display_name.unwrap_or(value.login),
             permissions,
             registered: value.registered,
             updated: value.updated,
@@ -50,7 +79,7 @@ mod db {
         pub id: i32,
         pub login: String,
         pub password: Vec<u8>,
-        pub display_name: String,
+        pub display_name: Option<String>,
         pub registered: NaiveDateTime,
         pub updated: NaiveDateTime,
         pub last_login: Option<NaiveDateTime>,

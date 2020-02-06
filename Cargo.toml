@@ -20,6 +20,7 @@ env_logger = "0.7.1"
 jsonwebtoken = "7.0.1"
 lazy_static = "1.4.0"
 libsqlite3-sys = { version = "0.16", features = ["bundled"] }
+lru = "0.4.3"
 num_cpus = "1.12.0"
 rand = "0.7.3"
 rust-argon2 = "0.7.0"

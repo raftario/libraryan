@@ -1,2 +1,2 @@
 mod permissions;
-mod users;
+pub mod users;
