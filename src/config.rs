@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 #[serde(default)]
 pub struct CacheConfig {
     pub user_cache_size: usize,
+    pub book_cache_size: usize,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -17,7 +18,10 @@ pub struct Config {
 
 impl Default for CacheConfig {
     fn default() -> Self {
-        Self { user_cache_size: 8 }
+        Self {
+            user_cache_size: 8,
+            book_cache_size: 32,
+        }
     }
 }
 
