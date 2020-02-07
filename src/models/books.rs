@@ -15,9 +15,8 @@ impl Book {
             return Ok((*b).clone());
         }
 
-        let connection = POOL.get().unwrap();
-
-        let book: Book = schema::books::dsl::books
+        let connection = POOL.get()?;
+        let book = schema::books::dsl::books
             .find(id)
             .first::<Self>(&connection)?;
         cache.put(book.id, book.clone());
@@ -33,7 +32,7 @@ mod db {
     use crate::schema::books;
     use chrono::{NaiveDate, NaiveDateTime};
 
-    #[derive(Identifiable, Queryable, PartialEq, Clone, Debug)]
+    #[derive(Identifiable, Queryable, Clone)]
     #[table_name = "books"]
     pub struct Book {
         pub id: i32,

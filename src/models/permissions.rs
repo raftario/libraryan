@@ -1,4 +1,4 @@
-#[derive(Copy, Clone, Eq, PartialEq, Hash, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Permission {
     Admin,
     RegisterUser,
@@ -74,7 +74,7 @@ impl From<db::Permission> for Permission {
 pub mod db {
     use crate::schema::permissions;
 
-    #[derive(Identifiable, Queryable, PartialEq, Debug)]
+    #[derive(Identifiable, Queryable)]
     #[table_name = "permissions"]
     pub struct Permission {
         pub id: i32,

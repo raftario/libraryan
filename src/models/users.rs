@@ -11,7 +11,7 @@ use std::{
     convert::{TryFrom, TryInto},
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct User {
     pub id: i32,
     pub login: String,
@@ -31,8 +31,7 @@ impl User {
             return Ok((*u).clone());
         }
 
-        let connection = POOL.get().unwrap();
-
+        let connection = POOL.get()?;
         let user: User = schema::users::dsl::users
             .find(id)
             .first::<db::User>(&connection)?
@@ -78,7 +77,7 @@ mod db {
     use crate::schema::{user_permission_mappings, users};
     use chrono::NaiveDateTime;
 
-    #[derive(Identifiable, Queryable, PartialEq, Debug)]
+    #[derive(Identifiable, Queryable, PartialEq)]
     #[table_name = "users"]
     pub struct User {
         pub id: i32,
@@ -90,7 +89,7 @@ mod db {
         pub last_login: Option<NaiveDateTime>,
     }
 
-    #[derive(Identifiable, Queryable, Associations, PartialEq, Debug)]
+    #[derive(Identifiable, Queryable, Associations)]
     #[table_name = "user_permission_mappings"]
     #[belongs_to(User)]
     pub struct UserPermissionMapping {
