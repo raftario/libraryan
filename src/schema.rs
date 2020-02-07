@@ -101,7 +101,7 @@ table! {
     users (id) {
         id -> Integer,
         login -> Text,
-        password -> Binary,
+        password -> Text,
         display_name -> Nullable<Text>,
         registered -> Timestamp,
         updated -> Timestamp,

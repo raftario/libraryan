@@ -15,7 +15,7 @@ use std::{
 pub struct User {
     pub id: i32,
     pub login: String,
-    password: Vec<u8>,
+    password: String,
     pub display_name: String,
     pub permissions: HashSet<Permission>,
     pub registered: NaiveDateTime,
@@ -39,6 +39,10 @@ impl User {
             .try_into()?;
         cache.put(user.id, user.clone());
         Ok(user)
+    }
+
+    pub fn verify_passwd(&self, passwd: &[u8]) -> Result<bool, Error> {
+        Ok(argon2::verify_encoded(&self.password, passwd)?)
     }
 }
 
@@ -79,7 +83,7 @@ mod db {
     pub struct User {
         pub id: i32,
         pub login: String,
-        pub password: Vec<u8>,
+        pub password: String,
         pub display_name: Option<String>,
         pub registered: NaiveDateTime,
         pub updated: NaiveDateTime,
